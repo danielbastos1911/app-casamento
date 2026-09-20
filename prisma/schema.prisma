@@ -1,0 +1,91 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model User {
+  id           String   @id @default(cuid())
+  email        String   @unique
+  passwordHash String
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
+
+enum RsvpStatus {
+  PENDENTE
+  CONFIRMADO
+  RECUSADO
+}
+
+model Guest {
+  id                       String     @id @default(cuid())
+  codigoConvite            String     @unique @default(cuid())
+  nome                     String
+  grupo                    String?
+  telefone                 String?
+  email                    String?
+  acompanhantes            String[]   @default([])
+  acompanhantesConfirmados String[]   @default([])
+  restricaoAlimentar       String?    @db.Text
+  mensagem                 String?    @db.Text
+  status                   RsvpStatus @default(PENDENTE)
+  respondidoEm             DateTime?
+  createdAt                DateTime   @default(now())
+  updatedAt                DateTime   @updatedAt
+}
+
+enum OrderStatus {
+  PENDENTE
+  APROVADO
+  RECUSADO
+  CANCELADO
+}
+
+model Gift {
+  id         String   @id @default(cuid())
+  nome       String
+  descricao  String   @db.Text
+  imagemUrl  String?
+  valor      Decimal  @db.Decimal(10, 2)
+  disponivel Boolean  @default(true)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  orders     Order[]
+}
+
+model Order {
+  id                      String      @id @default(cuid())
+  giftId                  String
+  gift                    Gift        @relation(fields: [giftId], references: [id])
+  nomeComprador           String
+  mensagem                String?     @db.Text
+  valor                   Decimal     @db.Decimal(10, 2)
+  status                  OrderStatus @default(PENDENTE)
+  metodoPagamento         String?
+  mercadoPagoPreferenceId String?
+  mercadoPagoPaymentId    String?     @unique
+  createdAt               DateTime    @default(now())
+  updatedAt               DateTime    @updatedAt
+}
+
+model EventInfo {
+  id                 String   @id @default(cuid())
+  nomeNoivo          String
+  nomeNoiva          String
+  dataCasamento      DateTime
+  historia           String   @db.Text
+  cerimoniaLocal     String
+  cerimoniaEndereco  String
+  cerimoniaHorario   String
+  recepcaoLocal      String
+  recepcaoEndereco   String
+  recepcaoHorario    String
+  fotoCapaUrl        String?
+  fotoCapaPosicao    String   @default("50% 50%")
+  galeriaUrls        String[] @default([])
+  updatedAt          DateTime @updatedAt
+}
