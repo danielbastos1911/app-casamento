@@ -2,6 +2,8 @@ import Image from "next/image";
 import { prisma } from "@/lib/prisma";
 import { CountdownTimer } from "@/components/site/CountdownTimer";
 
+export const dynamic = "force-dynamic";
+
 const dateFormatter = new Intl.DateTimeFormat("pt-BR", {
   day: "2-digit",
   month: "long",
